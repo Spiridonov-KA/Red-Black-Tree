@@ -114,6 +114,7 @@ public:
 	}
 
 	int distance(KeyT &l, KeyT &r) {
+		if (l > r) return 0;
 		int res = upper_bound(r).is_less_ - lower_bound(l).is_less_;
 		assert(res >= 0);
 		return res;

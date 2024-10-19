@@ -26,11 +26,12 @@ function(run_tests path_to_tests exe_file)
     file(GLOB testfiles "${path_to_tests}/*.dat")
     foreach(file ${testfiles})
         add_test(
-                NAME ${file}
+                NAME ${file}.${exe_file}
                 COMMAND bash -c "${CMAKE_SOURCE_DIR}/runtest.sh ${file} ./${exe_file}"
                 WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
-        set_tests_properties(${file} PROPERTIES DEPENDS ${exe_file})
+			# set_tests_properties(${file} PROPERTIES DEPENDS ${exe_file})
     endforeach()
 endfunction()
 
 run_tests("tests" ${RBTREE_EXE})
+run_tests("tests" ${SET_EXE})

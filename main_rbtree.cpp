@@ -28,10 +28,6 @@ int main(int argc, char **argv) {
 		}
 		else {
 			std::cin >> l >> r;
-			if (l >= r) {
-				std::cout << "Incorrect input. r has to be greater than l, i.e. r > l in command \"q l r\"\n";
-				return 1;
-			}
 			int res = tree.distance(l, r);
 			#ifdef DEBUG
 			std::cout << l << ' ' << r << '\n';
