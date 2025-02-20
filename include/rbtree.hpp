@@ -13,9 +13,8 @@ struct Node {
 	COLOR color_;      // color of node
 	size_t nodes_ = 1; // holds number of nodes that contains left subtree +
 					   // right subtree + this node
-	const T key_;      // stored value
+	T key_;      // stored value
 	Node(T key, COLOR color = RED) : key_(key), color_(color) { }
-	Node(Node<T> const &rhs) { }
 };
 
 template<typename T>
@@ -31,6 +30,10 @@ class RBTree {
 	using iterator = const Node<KeyT> *;
 	size_t sz_ = 0;
 public:
+  size_t size() const {
+    return sz_;
+  }
+
 	const Iter<KeyT> lower_bound(KeyT key) const { 
 		Node<KeyT> *cur_node = root_;
 		Node<KeyT> *res_node;
@@ -102,12 +105,6 @@ public:
 
 		balance_tree(cur_node);
 	}
-	void recount_nodes(Node<KeyT> *cur_node) {
-		while (cur_node != nullptr) {
-			++cur_node->nodes_;
-			cur_node = cur_node->parent_;
-		}
-	}
 
 	void printBT() {
 	    printBT("", root_, false);
@@ -121,6 +118,14 @@ public:
 	}
 
 private:
+
+	void recount_nodes(Node<KeyT> *cur_node) {
+		while (cur_node != nullptr) {
+			++cur_node->nodes_;
+			cur_node = cur_node->parent_;
+		}
+	}
+  
 	void balance_tree(Node<KeyT> *cur_node) {
 		while (cur_node->parent_ != nullptr and cur_node->parent_->color_ == RED) {
 			if (cur_node->parent_ == cur_node->parent_->parent_->left_) {
