@@ -21,6 +21,7 @@ template<typename T>
 struct Iter {
 	const Node<T> *node_;
 	int is_less_ = 0;  // stores number of elements that are less current
+  Iter() = default;
 	Iter(Node<T> *node, size_t is_less) : node_(node), is_less_(is_less) {}
 };
 
@@ -33,10 +34,12 @@ public:
   size_t size() const {
     return sz_;
   }
-
+  
+  // Returns an Iter<T> pointing to an element greater than or equal to the key
+  // If there is no such element Iter<T>.node == nullptr
 	const Iter<KeyT> lower_bound(KeyT key) const { 
 		Node<KeyT> *cur_node = root_;
-		Node<KeyT> *res_node;
+		Node<KeyT> *res_node = nullptr;
 		int is_less = sz_;
 		while (cur_node != nullptr) {
 			if (key > cur_node->key_) {
@@ -52,8 +55,12 @@ public:
 			cur_node = cur_node->left_;
 		}
 		assert(is_less >= 0);
-		return Iter<KeyT>(cur_node, is_less);
+		return Iter<KeyT>(res_node, is_less);
 	}
+
+
+  // Returns an Iter<T> pointing to an element greater than the key
+  // If there is no such element Iter<T>.node == nullptr
 	const Iter<KeyT> upper_bound(KeyT key) const {
 		Node<KeyT> *cur_node = root_;
 		Node<KeyT> *res_node = nullptr;
@@ -74,8 +81,8 @@ public:
 		assert(is_less >= 0);
 		return Iter<KeyT>(res_node, is_less);
 	}
-	int distance(iterator fst, iterator snd) const { return 0; }
 
+  // Insert key to the Red-Black Tree
 	void insert(KeyT key) {
 		if (sz_ == 0) {
 			root_ = new Node(key, BLACK);
@@ -110,6 +117,7 @@ public:
 	    printBT("", root_, false);
 	}
 
+  // Counts the number of elements lying between l and r
 	int distance(KeyT &l, KeyT &r) {
 		if (l > r) return 0;
 		int res = upper_bound(r).is_less_ - lower_bound(l).is_less_;
