@@ -4,8 +4,31 @@ This repo consists of implementation of red-black tree and
 comparison functions std::distance and my_distance
 
 ## Building and running
+
+First clone repo and perform other actions from repo source folder.
+
 ```bash
-cmake -DCMAKE_BUILD_TYPE=Release -S . -B build
+git clone git@github.com:Spiridonov-KA/Red-Black-Tree.git
+cd Red-Black-Tree
+```
+
+This project uses gtest. To install this library, we're going to use conan. I prefer to create a virtual environment for this.
+To get more information about the installation, read [here](https://conan.io/downloads)
+
+```bash
+python3.12 -m venv ./venv
+source ./venv/bin/activate
+pip install conan
+```
+
+Instaling gtest:
+```bash
+conan install . --output-folder=./ --build=missing
+```
+
+Building project:
+```bash
+cmake -DCMAKE_TOOLCHAIN_FILE=build/Release/generators/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release -B build
 cmake --build ./build
 env CTEST_OUTPUT_ON_FAILURE=1 cmake --build build --target test
 ```
