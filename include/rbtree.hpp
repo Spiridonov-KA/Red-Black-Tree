@@ -167,7 +167,7 @@ private:
 	void balance_tree(Node<KeyT> *cur_node) {
 		while (cur_node->parent_ != nullptr and cur_node->parent_->color_ == Trees::COLOR::RED) {
 			if (cur_node->parent_ == cur_node->parent_->parent_->left_) {
-				Node<int> *&uncle = cur_node->parent_->parent_->right_;
+				Node<KeyT> *uncle = cur_node->parent_->parent_->right_;
 				if (uncle == nullptr or uncle->color_ == Trees::COLOR::BLACK) {
 					if (cur_node == cur_node->parent_->right_) { // i.e. cur_node is right child
 						cur_node = cur_node->parent_;
@@ -185,7 +185,7 @@ private:
 				}
 			}
 			else {
-				Node<int> *&uncle = cur_node->parent_->parent_->left_;
+				Node<KeyT> *uncle = cur_node->parent_->parent_->left_;
 				if (uncle == nullptr or uncle->color_ == Trees::COLOR::BLACK) {
 					if (cur_node == cur_node->parent_->left_) { // i.e. cur_node is left child
 						cur_node = cur_node->parent_;
