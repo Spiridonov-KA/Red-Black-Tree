@@ -26,12 +26,26 @@ Instaling gtest:
 conan install . --output-folder=./ --build=missing
 ```
 
+To instaling gtest in debug mode:
+```bash
+conan install . --output-folder=./ --build=missing --settings=build_type=Debug
+```
+
+
 Building project:
 ```bash
 cmake -DCMAKE_TOOLCHAIN_FILE=build/Release/generators/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release -B build
 cmake --build ./build
 env CTEST_OUTPUT_ON_FAILURE=1 cmake --build build --target test
 ```
+
+To building project in debug mode:
+```bash
+cmake -DCMAKE_TOOLCHAIN_FILE=build/Debug/generators/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Debug -B build
+cmake --build ./build
+env CTEST_OUTPUT_ON_FAILURE=1 cmake --build build --target test
+```
+
 
 This creates to object files `./build/main_rbtree`, `./build/main_set` and `./build/gen_tests`.
 
