@@ -1,9 +1,11 @@
-#include <iostream>
 #include <cassert>
+#include <iostream>
+#include <queue>
+#include <stack>
 
 namespace Trees {
 
-enum COLOR: char {
+enum class COLOR {
 	BLACK, RED
 };
 
@@ -14,7 +16,7 @@ struct Node {
 	size_t nodes_ = 1; // holds number of nodes that contains left subtree +
 					   // right subtree + this node
 	T key_;      // stored value
-	Node(T key, COLOR color = RED) : key_(key), color_(color) { }
+	Node(T key, COLOR color = Trees::COLOR::RED) : key_(key), color_(color) { }
 };
 
 template<typename T>
@@ -26,7 +28,7 @@ struct Iter {
 };
 
 template<typename KeyT=int, typename Comp=std::less<KeyT>>
-class RBTree {
+class RBTree final {
 	Node<KeyT> *root_ = nullptr;
 	using iterator = const Node<KeyT> *;
 	size_t sz_ = 0;
@@ -37,7 +39,7 @@ public:
   
   // Returns an Iter<T> pointing to an element greater than or equal to the key
   // If there is no such element Iter<T>.node == nullptr
-	const Iter<KeyT> lower_bound(KeyT key) const { 
+	Iter<KeyT> lower_bound(KeyT key) const { 
 		Node<KeyT> *cur_node = root_;
 		Node<KeyT> *res_node = nullptr;
 		int is_less = sz_;
@@ -61,7 +63,7 @@ public:
 
   // Returns an Iter<T> pointing to an element greater than the key
   // If there is no such element Iter<T>.node == nullptr
-	const Iter<KeyT> upper_bound(KeyT key) const {
+	Iter<KeyT> upper_bound(KeyT key) const {
 		Node<KeyT> *cur_node = root_;
 		Node<KeyT> *res_node = nullptr;
 		int is_less = sz_;
@@ -85,7 +87,7 @@ public:
   // Insert key to the Red-Black Tree
 	void insert(KeyT key) {
 		if (sz_ == 0) {
-			root_ = new Node(key, BLACK);
+			root_ = new Node(key, Trees::COLOR::BLACK);
 			++sz_;
 			return;
 		}
@@ -125,6 +127,34 @@ public:
 		return res;
 	}
 
+  ~RBTree() {
+    if (root_ == nullptr) 
+      return;
+    std::stack<Trees::Node<KeyT> *> q;
+    q.push(root_);
+    while (!q.empty()) {
+      Node<KeyT> *cur_node = q.top();
+      if (cur_node->left_ == nullptr and cur_node->right_ == nullptr) {
+        if (cur_node->parent_ and cur_node->parent_->left_ == cur_node) {
+          cur_node->parent_->left_ = nullptr;
+        }
+        if (cur_node->parent_ and cur_node->parent_->right_ == cur_node) {
+          cur_node->parent_->right_ = nullptr;
+        }
+        delete cur_node;
+        q.pop();
+        continue;
+      }
+      if (cur_node->left_ != nullptr) {
+        q.push(cur_node->left_);
+        continue;
+      }
+      if (cur_node->right_ != nullptr) {
+        q.push(cur_node->right_);
+      }
+    }
+  }
+
 private:
 
 	void recount_nodes(Node<KeyT> *cur_node) {
@@ -135,45 +165,45 @@ private:
 	}
   
 	void balance_tree(Node<KeyT> *cur_node) {
-		while (cur_node->parent_ != nullptr and cur_node->parent_->color_ == RED) {
+		while (cur_node->parent_ != nullptr and cur_node->parent_->color_ == Trees::COLOR::RED) {
 			if (cur_node->parent_ == cur_node->parent_->parent_->left_) {
 				Node<int> *&uncle = cur_node->parent_->parent_->right_;
-				if (uncle == nullptr or uncle->color_ == BLACK) {
+				if (uncle == nullptr or uncle->color_ == Trees::COLOR::BLACK) {
 					if (cur_node == cur_node->parent_->right_) { // i.e. cur_node is right child
 						cur_node = cur_node->parent_;
 						left_rotate(cur_node);
 					}
-					cur_node->parent_->color_ = BLACK;
-					cur_node->parent_->parent_->color_ = RED;
+					cur_node->parent_->color_ = Trees::COLOR::BLACK;
+					cur_node->parent_->parent_->color_ = Trees::COLOR::RED;
 					right_rotate(cur_node->parent_->parent_);
 				}
 				else { // i.e. uncle is RED
-					cur_node->parent_->color_ = BLACK;
-					uncle->color_ = BLACK;
-					cur_node->parent_->parent_->color_ = RED;
+					cur_node->parent_->color_ = Trees::COLOR::BLACK;
+					uncle->color_ = Trees::COLOR::BLACK;
+					cur_node->parent_->parent_->color_ = Trees::COLOR::RED;
 					cur_node = cur_node->parent_->parent_;
 				}
 			}
 			else {
 				Node<int> *&uncle = cur_node->parent_->parent_->left_;
-				if (uncle == nullptr or uncle->color_ == BLACK) {
+				if (uncle == nullptr or uncle->color_ == Trees::COLOR::BLACK) {
 					if (cur_node == cur_node->parent_->left_) { // i.e. cur_node is left child
 						cur_node = cur_node->parent_;
 						right_rotate(cur_node);
 					}
-					cur_node->parent_->color_ = BLACK;
-					cur_node->parent_->parent_->color_ = RED;
+					cur_node->parent_->color_ = Trees::COLOR::BLACK;
+					cur_node->parent_->parent_->color_ = Trees::COLOR::RED;
 					left_rotate(cur_node->parent_->parent_);
 				}
 				else { // i.e. uncle is RED
-					cur_node->parent_->color_ = BLACK;
-					uncle->color_ = BLACK;
-					cur_node->parent_->parent_->color_ = RED;
+					cur_node->parent_->color_ = Trees::COLOR::BLACK;
+					uncle->color_ = Trees::COLOR::BLACK;
+					cur_node->parent_->parent_->color_ = Trees::COLOR::RED;
 					cur_node = cur_node->parent_->parent_;
 				}
 			}
 		}
-		root_->color_ = BLACK;
+		root_->color_ = Trees::COLOR::BLACK;
 	}
 
 	/*
